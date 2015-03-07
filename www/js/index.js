@@ -16,12 +16,43 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
+var shapeArray = [];
+
+var x = 0;
+var y = 0;
+var z = 0;
+
+var vfx = 0;
+var vfy = 0;
+var vfz = 0;
+
+var freq = 100;
+
+function getDistance(v0, a, t) {
+    return v0*t + 0.5*a*t;
+}
+
 function onSuccess(acceleration) {
-    alert('Acceleration X: ' + acceleration.x + '\n' +
-          'Acceleration Y: ' + acceleration.y + '\n' +
-          'Acceleration Z: ' + acceleration.z + '\n' +
-          'Timestamp: '      + acceleration.timestamp + '\n');
+
+    dx = getDistance(vfx, acceleration.x, freq);
+    dy = getDistance(vfy, acceleration.y, freq);
+    dz = getDistance(vfz, acceleration.z, freq);
+
+    vfx = acceleration.x * freq;
+    vfy = acceleration.y * freq;
+    vfz = acceleration.z * freq;
+
+    document.getElementById('accelerationX').innerHTML = acceleration.x;
+    document.getElementById('accelerationY').innerHTML = acceleration.y;
+    document.getElementById('accelerationZ').innerHTML = acceleration.z;
+    document.getElementById('distanceX').innerHTML = dx;
+    document.getElementById('distanceY').innerHTML = dy;
+    document.getElementById('distanceZ').innerHTML = dz;
+    document.getElementById('velocityX').innerHTML = vfx;
+    document.getElementById('velocityY').innerHTML = vfy;
+    document.getElementById('velocityZ').innerHTML = vfz;
+    shapeArray.push(x+dx, y+dy, z+dz);
 };
 
 function onError() {
@@ -31,13 +62,6 @@ function onError() {
 var app = {
     // Application Constructor
     initialize: function() {
-	alert("yay! it worked");
-	var TestObject = Parse.Object.extend("TestObject");
-	var testObject = new TestObject();
-	testObject.save({foo: "bar"}).then(function(object) {
-		alert("yay! it worked");
-	});
-	
         this.bindEvents();
     },
     // Bind Event Listeners
@@ -52,14 +76,10 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-	alert('Acceleration X: ');
-	var options = { frequency: 3000 };  // Update every 3 seconds
-	var watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
-	Parse.initialize("BktVGHGrlbewaB8zQYr2Ggb9czE6XVkodvyZTP9l", "mxf2wEBpjCXSAksg09BBiFcCfi6mPXHrzBxu4LX1");
-	
-
-        console.log(navigator.accelerometer);
-	app.receivedEvent('deviceready');
+        app.receivedEvent('deviceready');
+        var options = { frequency: freq };
+        shapeArray.push([x, y, z]);
+        var watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -69,6 +89,7 @@ var app = {
 
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
+
         console.log('Received Event: ' + id);
     }
 };
