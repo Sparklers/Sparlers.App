@@ -31,6 +31,12 @@ function onError() {
 var app = {
     // Application Constructor
     initialize: function() {
+	alert("yay! it worked");
+	var TestObject = Parse.Object.extend("TestObject");
+	var testObject = new TestObject();
+	testObject.save({foo: "bar"}).then(function(object) {
+		alert("yay! it worked");
+	});
 	
         this.bindEvents();
     },
@@ -49,7 +55,9 @@ var app = {
 	alert('Acceleration X: ');
 	var options = { frequency: 3000 };  // Update every 3 seconds
 	var watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+	Parse.initialize("BktVGHGrlbewaB8zQYr2Ggb9czE6XVkodvyZTP9l", "mxf2wEBpjCXSAksg09BBiFcCfi6mPXHrzBxu4LX1");
 	
+
         console.log(navigator.accelerometer);
 	app.receivedEvent('deviceready');
     },
